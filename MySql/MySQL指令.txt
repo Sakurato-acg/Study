@@ -1,0 +1,344 @@
+-u root -p 登陆
+
+select * from employees;
+
+create database dbtest1;
+
+show databases;
+show create database dbtest1;
+show create table employees;
+
+show variables like 'collation_%';
+
+
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '新密码';
+
+SELECT  DISTINCT department_id  去重选择数据
+
+空值参与计算 IFNULL(***,0);  把null值视作为0
+
+
+` 着重号 防止与关键字重复 	
+ describe      employee;
+
+
+MySQL中使用 LIMIT 实现分页 ORDER BY 排序 (DESC 逆序)
+格式：
+SELECT last_name, department_id, salary 
+FROM employees
+ ORDER BY department_id, salary DESC;
+ LIMIT [位置偏移量,] 行数
+
+
+LIMIT 3 OFFSET 4
+
+F
+------------------------------------------------------------------------------------------------------------
+IF(value,value1,value2)
+如果value的值为TRUE，返回value1，
+否则返回value2 IFNULL(value1, value2)
+如果value1不为NULL，返回value1，否
+则返回value2
+----------------------------------------------------
+聚合函数
+AVG()      SUM()
+MAX()      MIN()
+COUNT()
+
+GROUP BY 
+-----------------------------------------------------
+代码顺序
+SELECT *
+FROM EMP
+JOIN ON（交并集）
+WHERE (分组前过滤) 
+GROUP BY（分组）  
+HAVING（分组后筛选）
+ORDER BY（排序）
+LIMIT（分页）
+---------------------------------------------------------------------------------------------------------------------
+ALTER DATABASE 数据库名 CHARACTER SET 字符集; #比如：gbk、utf8等
+[----DDL----]
+1.修改表
+
+   1.1添加一个字段
+        ALTER TABLE  emp1
+        AND salary DOUBLE (10,2)
+    
+        ALTER TABLE  emp1
+        AND phone_number VARCHAR(20) FIRST/AFTER 某字段
+
+    1.2 修改一个字段:数据类型，长度，默认值 
+          ALTER  TABLE ........
+          MODIFY  ................VARCHAR(35) DEFAULT '默认值'
+     
+    1.3 重命名一个字段 
+          ALTER TABLE ....
+          CHANGE [原名][修改后] 
+    1.4 删除一个字段
+          ALTER TABLE .....
+          DROP COLUMN [字段名]
+     1.5重命名表
+          RANAME TABLE .....
+          TO ....
+      1.6 drop 表 DELECT FROM 
+      1.7 清空表
+            TRUNCATE    TABLE    ......
+
+
+2.添加操作
+       2.1 VALUES的方式添加 (使用这种语法一次只能向表中插入一条数据)
+
+             INSERT INTO departments VALUES (70, 'Pub', 100, 1700);
+        
+       2.2 
+            INSERT INTO emp2 
+            SELECT *
+            FROM employees 
+            WHERE department_id = 90;
+
+3. 更新数据
+     
+    UPDATE     employees 
+    SET            department_id = 70 
+    WHERE      employee_id = 113;
+
+4.删除数据
+
+
+    DELETE FROM departments 
+    WHERE department_name = 'Finance';
+
+5. 计算列
+create table ....(
+a  INT
+b INT 
+c INT generated always AS (a+b) virtual
+)
+
+
+
+
+
+
+
+
+
+
+
+
+[----DCL-----]
+1.COMMIT  （类似GAL中的SAVE）     提交数据，一旦提交永远保持，不能回滚
+2.ROLLBACK（类似GAL中的READ）    回滚数据，回滚到最近的一次COMMIT
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+【第十三章--约束（constraint）】
+
+NOT NULL            	 非空约束，规定某个字段不能为空
+UNIQUE		 唯一约束，规定某个字段在整个表中是唯一的
+
+-----{ ALTER TABLE ....ADD CONSTRAINT  别名 UNIQUE() }
+
+AUTO_INCREMENT 自增列
+PRIMARY KEY 	 主键(非空且唯一)约束
+FOREIGN KEY 	 外键约束
+CHECK	 	 检查约束
+
+--create table employee( 
+-----eid int primary key,
+----- ename varchar(5), 
+------gender char check ('男' or '女') );
+
+
+DEFAULT	 	 默认值约束
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+【第十四章--视图（VIEW）】
+
+《创建视图》
+        create view 。。。。
+        AS 
+(SELECT .....数据)
+
+《查看视图》
+
+        show table status like '........'/g
+
+        show create view ......
+ 
+《更新数据》
+  
+         update ..... 
+         set...
+
+《修改视图》
+
+Alter view ....
+as..
+
+OR
+
+create or replace view ...
+as .....
+
+《删除视图》
+
+drop view if exists .....
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+【第十五章--存储过程与函数】
+《存储过程》
+
+delimiter $
+create procedure `name`()
+begin
+	select * from emp;
+end $
+
+delimiter ;
+============
+#调用                 
+call `name`();       
+============
+#
+delimiter $
+create procedure `name`(OUT  `ms` DOUBLE )//(IN `ms`  INT) 可以结合使用
+begin
+	select *  into ms
+               from emp
+            //where id=ms;
+end $
+
+delimiter ;
+
+《存储函数》（function，select）
+delimiter ￥
+    create funciton ......(......)
+         retrun 数据类型
+         特性   deterministic ，contain sql
+               begin
+                            return (select * from emp;)        
+               end  ￥
+
+
+delimiter ；
+
+
+---------------------------------------------------------------------------------------------
+《第十六章--变量、流程控制与游标》
+
+             show global   variables ;
+             show session  variables；
+
+1.<><>系统变量<><>
+             select @@global.变量名;
+
+             max_connections 全局
+             character_set_client  会话+全局
+             pseudo_thead_id   会话
+
+             set global  变量名=变量值；
+
+2.1<><>用户变量<><>
+             set @用户变量 :=变量值
+
+2.2<<<<局部变量>>>>
+              declare 变量名 int default 0；
+
+3.<><>定义条件与处理程序<><>
+
+            declare Field_Not_BE_NULL  condition for 1048;
+
+            declare 处理方式 handler for 错误类型 处理语句 
+
+4.<><>流程控制<><>
+            IF val IS NULL 
+                THEN SELECT 'val is null';
+                 ELSE SELECT 'val is not null'; 
+            END IF;
+
+】】】】
+            CASE val
+                     WHEN 1 THEN SELECT 'val is 1';
+                     WHEN 2 THEN SELECT 'val is 2';
+                     ELSE SELECT 'val is not 1 or 2';
+             END CASE;
+
+】】】】
+             DECLARE id INT DEFAULT 0;
+             add_loop:LOOP 
+                     SET id = id +1;
+                     IF id >= 10 THEN LEAVE add_loop; 
+                     END IF;
+              END LOOP add_loop;
+】】】】
+              WHILE i < 10 DO 
+              SET i = i + 1; 
+              END WHILE;
+
+】】】】
+
+              REPEAT
+                          SET i = i + 1; 
+              UNTIL i >= 10 
+              END REPEAT;
+
+】】】】 
+             LEAVE == break;
+             itera    == continue;
+
+-----------------------------------------------------------------------------------------------
+【第十七章_触发器】
+
+create trigger  触发器名称
+{before || after }
+{insert || update || delect } on 表名
+for each row 
+触发器执行的语句块；
+
+show trigger \g                        查看当前数据库的所有触发器的定义
+show create trigger 触发器名； 查看当前数据库中某个触发器的定义
+
+drop trigger if exits 触发器名；  删除触发器
+
+抛错
+signal sqlstate 'HY000' set messafe_text = ',,,,,,,,,,,,,,';
+---------------------------------------------------------------------------------------------------
+【第十八章--8.0新特性】
+例子
+select   sum（`sales_value`）over(partiton by `city`)
+from sales;
+
+ROW_NUMBER() 顺序显示，分组每组加上列1-n；
+
+RANK()；
+DENSE_RANK();
+
+CUME_DIST()            OVER    小于等于当前值的比例
+LAG(exp,n)                OVER    获取前第n个值；
+LEAD(exp,n)              OVER    获取后第n个值；
+FIRST_VALUE(exp)     OVER    返回第一个exp值；
+LAST_VALUE (exp)     OVER    返回最后一个exp值；
+----------------- -------------------------------------------------------------------------------------
+【事务】
+set autocommit =0 关闭
+set autocommit =1 开启
+
+start transaction 开始事务
+{执行语句}
+commit 提交
+rollback 回滚
+set autocommit =1 开启自动提交
+----------------------------------------------------------------------------------------
+【锁】
+行级锁/悲观锁      sql后上 for update  相关行锁定{不支持并发}
+乐观锁                 {支持并发}
+----------------------------------------------------------------------------------------
+
+SET @i=0;
+
+UPDATE `t_book` SET `id`=(@i:=@i+1);
+
+ALTER TABLE `t_book` AUTO_INCREMENT=0;
