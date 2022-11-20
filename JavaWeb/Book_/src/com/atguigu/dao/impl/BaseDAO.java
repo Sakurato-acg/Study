@@ -1,6 +1,7 @@
 package com.atguigu.dao.impl;
 
 import com.atguigu.utils.JDBCUtils;
+import com.mysql.cj.jdbc.JdbcConnection;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
@@ -21,18 +22,14 @@ public class BaseDAO {
      **/
 
     public int update(String sql, Object... args) {
-        Connection conn = null;
+        Connection conn = JDBCUtils.getConnection();
         int update = -1;
         try {
-            conn = JDBCUtils.getConnection();
-
-            update = queryRunner.update(conn, sql, args);
+            return update = queryRunner.update(conn, sql, args);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            JDBCUtils.closeResource_(conn);
+            throw new RuntimeException(e);
         }
-        return update;
     }
 
     /**
@@ -45,45 +42,36 @@ public class BaseDAO {
      **/
 
     public <T> T queryForOne(Class<T> type, String sql, Object... args) {
-        Connection conn = null;
+        Connection conn = JDBCUtils.getConnection();
         try {
-            conn = JDBCUtils.getConnection();
             BeanHandler<T> handler = new BeanHandler<T>(type);
             return queryRunner.query(conn, sql, handler, args);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            JDBCUtils.closeResource_(conn);
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     public <T> List<T> queryForList(Class<T> type, String sql, Object... args) {
-        Connection conn = null;
+        Connection conn = JDBCUtils.getConnection();
         try {
-            conn = JDBCUtils.getConnection();
             BeanListHandler<T> handler = new BeanListHandler<>(type);
-            return queryRunner.query(conn, sql, handler, args);
+            List<T> query = queryRunner.query(conn, sql, handler, args);
+            return query;
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            JDBCUtils.closeResource_(conn);
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     public Object queryForSingleValue(String sql, Object... args) {
-        Connection conn = null;
+        Connection conn =JDBCUtils.getConnection();
         try {
-            conn = JDBCUtils.getConnection();
             return queryRunner.query(conn, sql, new ScalarHandler(), args);
-
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            JDBCUtils.closeResource_(conn);
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
 }

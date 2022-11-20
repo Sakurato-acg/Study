@@ -15,6 +15,30 @@
         <servlet-name>ClientBookServlet</servlet-name>
         <servlet-class>com.atguigu.web.ClientBookServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>MyKaptchaServlet</servlet-name>
+        <servlet-class>com.atguigu.web.MyKaptchaServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CartServlet</servlet-name>
+        <servlet-class>com.atguigu.web.CartServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>OrderServlet</servlet-name>
+        <servlet-class>com.atguigu.web.OrderServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OrderServlet</servlet-name>
+        <url-pattern>/orderServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CartServlet</servlet-name>
+        <url-pattern>/cartServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MyKaptchaServlet</servlet-name>
+        <url-pattern>/kaptcha.jpg</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ClientBookServlet</servlet-name>
         <url-pattern>/client/clientBookServlet</url-pattern>
@@ -27,5 +51,37 @@
         <servlet-name>UserServlet</servlet-name>
         <url-pattern>/userServlet</url-pattern>
     </servlet-mapping>
+    <filter>
+        <filter-name>MangerFilter</filter-name>
+        <filter-class>com.atguigu.filter.MangerFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>MangerFilter</filter-name>
+        <url-pattern>/pages/manager/*</url-pattern>
+        <url-pattern>/manager/bookServlet</url-pattern>
+    </filter-mapping>
+    <filter>
+        <filter-name>TransactionFilter</filter-name>
+        <filter-class>com.atguigu.filter.TransactionFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>TransactionFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <!--error-page标签配置，服务器出错之后，自动跳转的页面-->
+    <error-page>
+        <!--error-code是错误类型-->
+        <error-code>500</error-code>
+        <!--location标签表示。要跳转去的页面路径-->
+        <location>/pages/error/error500.jsp</location>
+    </error-page>
+
+    <!--error-page标签配置，服务器出错之后，自动跳转的页面-->
+    <error-page>
+        <!--error-code是错误类型-->
+        <error-code>404</error-code>
+        <!--location标签表示。要跳转去的页面路径-->
+        <location>/pages/error/error404.jsp</location>
+    </error-page>
 
 </web-app>

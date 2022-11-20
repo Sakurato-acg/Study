@@ -20,6 +20,8 @@ public class ClientBookServlet extends BaseServlet {
         int pageNo = WebUtils.parseInt(request.getParameter("pageNo"), 1);
         int pageSize = WebUtils.parseInt(request.getParameter("pageSize"), Page.PAGE_SIZE);
         Page<Book> page = bookService.page(pageNo, pageSize);
+
+
         page.setUrl("client/clientBookServlet?action=page");
         request.setAttribute("page", page);
         request.getRequestDispatcher("/pages/client/index.jsp").forward(request, response);

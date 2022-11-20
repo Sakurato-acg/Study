@@ -56,7 +56,7 @@
                         <label>用户名称：</label>
                         <input class="itxt" id="username" type="text" placeholder="请输入用户名" autocomplete="off"
                                tabindex="1"
-                               name="username" value="${requestScope.username}"/>
+                               name="username" value="${ empty requestScope.username?cookie.username.value:requestScope.username}"/>
                         <br/>
                         <br/>
                         <label>用户密码：</label>

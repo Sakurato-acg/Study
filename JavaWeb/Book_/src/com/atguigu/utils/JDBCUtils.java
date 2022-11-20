@@ -17,6 +17,7 @@ public class JDBCUtils {
      * 使用Druid数据库连接池技术
      */
     private static DruidDataSource source;
+    private static ThreadLocal<Connection> threadLocal = new ThreadLocal<>();
 
     static {
         try {
@@ -33,24 +34,39 @@ public class JDBCUtils {
         }
     }
 
-    public static Connection getConnection() throws SQLException {
-        Connection conn = null;
-        try {
-            conn = source.getConnection();
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static Connection getConnection()  {
+        Connection conn = threadLocal.get();
+        if (conn == null) {
+            try {
+                conn = source.getConnection();
+                threadLocal.set(conn);
+                conn.setAutoCommit(false);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return conn;
     }
 
-    public static void closeResource_(Connection conn) {
-        if (conn != null)
-            DbUtils.closeQuietly(conn);
+    public static void commitAndClose(){
+        Connection connection = threadLocal.get();
+        if (connection!=null){
+            try {
+                connection.commit();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }finally {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        threadLocal.remove();
+    }
+    public static void rollbackAndClose(){
+
     }
 
-    public static void closeResource_(Connection conn, Statement statement) {
-        if (conn != null)
-            DbUtils.closeQuietly(conn);
-        DbUtils.closeQuietly(statement);
-    }
 }

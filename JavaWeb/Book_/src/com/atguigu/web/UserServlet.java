@@ -4,12 +4,17 @@ import com.atguigu.bean.User;
 import com.atguigu.service.UserService;
 import com.atguigu.service.impl.UserServiceImpl;
 import com.atguigu.utils.WebUtils;
+import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
+import static com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY;
 
 @SuppressWarnings("all")
 public class UserServlet extends BaseServlet {
@@ -26,12 +31,16 @@ public class UserServlet extends BaseServlet {
     protected void login(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("处理登陆业务");
         //1.获取参数
-        String username= request.getParameter("username");
-        String password= request.getParameter("password");
-        User login = userService.login(new User(null,username,password,null));
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        User login = userService.login(new User(null, username, password, null));
+
+        Cookie cookie = new Cookie("username", username);
+        response.addCookie(cookie);
         //2.检查用户名是否可用
         if (login != null) {
             //已存在
+            request.getSession().setAttribute("user", login);
             request.getRequestDispatcher("/pages/user/login_success.jsp").forward(request, response);
         } else {
             request.setAttribute("err", "用户名或密码错误");
@@ -60,8 +69,13 @@ public class UserServlet extends BaseServlet {
 
         User user = WebUtils.copyParamToBean(request.getParameterMap(), new User());
 
+
+        String token = (String) request.getSession().getAttribute(KAPTCHA_SESSION_KEY);
+        request.getSession().removeAttribute(KAPTCHA_SESSION_KEY);
+
+
 //        2、检查 验证码是否正确  === 写死,要求验证码为:abcde
-        if ("abcde".equalsIgnoreCase(code)) {
+        if (token != null && token.equalsIgnoreCase(code)) {
 //        3、检查 用户名是否可用
             if (userService.check(username)) {
                 System.out.println("用户名[" + username + "]已存在!");
@@ -91,5 +105,27 @@ public class UserServlet extends BaseServlet {
             request.getRequestDispatcher("/pages/user/regist.jsp").forward(request, response);
         }
 
+    }
+
+
+    protected void logout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.getSession().invalidate();
+        response.sendRedirect(request.getContextPath());
+    }
+
+
+    protected void ajaxExistsUsername(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // 获取请求的参数username
+        String username = req.getParameter("username");
+        // 调用userService.existsUsername();
+        boolean existsUsername = userService.check(username);
+        // 把返回的结果封装成为map对象
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("existsUsername",existsUsername);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(resultMap);
+
+        resp.getWriter().write(json);
     }
 }

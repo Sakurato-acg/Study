@@ -4,10 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <title>尚硅谷会员注册页面</title>
-    <%@ include file="/pages/common/head.jsp"%>
+    <%@ include file="/pages/common/head.jsp" %>
     <script type="text/javascript">
         // 页面加载完成之后
         $(function () {
+
+
+            $("#username").blur(function () {
+                //1 获取用户名
+                let username = this.value;
+                $.getJSON("http://localhost:8080/Book_/userServlet", "action=ajaxExistsUsername&username=" + username, function (data) {
+                    if (data.existsUsername) {
+                        $("span.errorMsg").text("用户名已存在！");
+                    } else {
+                        $("span.errorMsg").text("用户名可用！");
+                    }
+                });
+            });
             // 给注册绑定单击事件
             $("#sub_btn").click(function () {
                 // 验证用户名：必须由字母，数字下划线组成，并且长度为5到12位
@@ -80,12 +93,17 @@
 
             });
 
+            $("#code_img").click(function () {
+                this.src = "${basePath }kaptcha.jpg?mr=" + Math.random();
+            })
+
+
         });
 
     </script>
     <style type="text/css">
-        .login_form{
-            height:420px;
+        .login_form {
+            height: 420px;
             margin-top: 25px;
         }
 
@@ -93,7 +111,7 @@
 </head>
 <body>
 <div id="login_header">
-    <img class="logo_img" alt="" src="static/img/logo.gif" >
+    <img class="logo_img" alt="" src="static/img/logo.gif">
 </div>
 
 <div class="login_banner">
@@ -118,30 +136,31 @@
                         <input class="itxt" type="text" placeholder="请输入用户名"
                                autocomplete="off" tabindex="1" name="username" id="username"
                                value="${empty username?"":username}"/>
-                        <br />
-                        <br />
+                        <br/>
+                        <br/>
                         <label>用户密码：</label>
                         <input class="itxt" type="password" placeholder="请输入密码"
-                               autocomplete="off" tabindex="1" name="password" id="password" />
-                        <br />
-                        <br />
+                               autocomplete="off" tabindex="1" name="password" id="password"/>
+                        <br/>
+                        <br/>
                         <label>确认密码：</label>
                         <input class="itxt" type="password" placeholder="确认密码"
-                               autocomplete="off" tabindex="1" name="repwd" id="repwd" />
-                        <br />
-                        <br />
+                               autocomplete="off" tabindex="1" name="repwd" id="repwd"/>
+                        <br/>
+                        <br/>
                         <label>电子邮件：</label>
                         <input class="itxt" type="text" placeholder="请输入邮箱地址"
                                autocomplete="off" tabindex="1" name="email" id="email"
-                               value="${empty email?"":email}" />
-                        <br />
-                        <br />
+                               value="${empty email?"":email}"/>
+                        <br/>
+                        <br/>
                         <label>验证码：</label>
                         <input class="itxt" type="text" name="code" style="width: 150px;" id="code"/>
-                        <img alt="" src="static/img/code.bmp" style="float: right; margin-right: 40px">
-                        <br />
-                        <br />
-                        <input type="submit" value="注册" id="sub_btn" />
+                        <img id="code_img" alt="" src="kaptcha.jpg"
+                             style="float: right; margin-right: 40px;width: 80px;height: 40px;">
+                        <br/>
+                        <br/>
+                        <input type="submit" value="注册" id="sub_btn"/>
                     </form>
                 </div>
 
@@ -149,6 +168,6 @@
         </div>
     </div>
 </div>
-<%@ include file="/pages/common/footer.jsp"%>
+<%@ include file="/pages/common/footer.jsp" %>
 </body>
 </html>
