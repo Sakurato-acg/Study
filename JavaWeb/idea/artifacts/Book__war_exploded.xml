@@ -1,0 +1,24 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="Book_:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/Book__war_exploded</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="Book_" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="application" name="mysql-connector-java-8.0.26" />
+          <element id="library" level="application" name="druid-1.1.10" />
+          <element id="library" level="application" name="commons-dbutils-1.3" />
+          <element id="library" level="application" name="junit" />
+          <element id="library" level="application" name="Utils" />
+          <element id="library" level="application" name="JSTL" />
+          <element id="library" level="application" name="kaptcha-2.3.2" />
+          <element id="library" level="application" name="gson-2.2.4" />
+          <element id="library" level="application" name="test" />
+        </element>
+      </element>
+      <element id="javaee-facet-resources" facet="Book_/web/Web" />
+    </root>
+  </artifact>
+</component>
