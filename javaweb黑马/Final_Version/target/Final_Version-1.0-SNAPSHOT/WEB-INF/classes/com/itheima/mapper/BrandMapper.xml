@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mapper.BrandMapper">
+
+
+    <resultMap id="brandResultMap" type="brand">
+        <result column="brand_name" property="brandName"></result>
+        <result column="company_name" property="companyName"></result>
+    </resultMap>
+    <select id="queryForSingleValueByCondition" resultType="java.lang.Integer">
+        select count(*)
+        from tb_brand
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="companyName != null and companyName != '' ">
+                and company_name like #{companyName}
+            </if>
+            <if test="brandName != null and brandName != '' ">
+                and brand_name like #{brandName}
+            </if>
+        </where>
+    </select>
+    <select id="selectByCondition" resultMap="brandResultMap">
+        select id, brand_name, company_name, ordered, description, status
+        from tb_brand
+        <if test="brand!=null">
+            <where>
+                <if test="brand.status != null">
+                    and status = #{brand.status}
+                </if>
+                <if test="brand.companyName != null and brand.companyName != '' ">
+                    and company_name like #{brand.companyName}
+                </if>
+                <if test="brand.brandName != null and brand.brandName != '' ">
+                    and brand_name like #{brand.brandName}
+                </if>
+            </where>
+        </if>
+
+        limit #{start},#{count}
+    </select>
+
+    <delete id="deleteByIds">
+        delete from tb_brand where id
+        in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>;
+    </delete>
+</mapper>
