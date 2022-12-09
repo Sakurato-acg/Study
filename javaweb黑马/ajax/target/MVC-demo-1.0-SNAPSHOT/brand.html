@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<a href="addBrand.html"><input type="button" value="新增"></a><br>
+<hr>
+<table id="brandTable" border="1" cellspacing="0" width="100%">
+    <tr>
+        <th>序号</th>
+        <th>品牌名称</th>
+        <th>企业名称</th>
+        <th>排序</th>
+        <th>品牌介绍</th>
+        <th>状态</th>
+        <th>操作</th>
+    </tr>
+</table>
+
+<script src="js/axios-0.18.0.js"></script>
+
+<script>
+    //1. 当页面加载完成后，发送ajax请求
+    window.onload = function () {
+        //2. 发送ajax请求
+        axios({
+            method: "get",
+            url: "http://localhost:80/ajax/selectAllServlet"
+        }).then(function (req,resp) {
+            //获取数据
+            let brands = resp.data;
+            let brandTable = document.querySelector("#brandTable");
+            for (let i = 0; i <brands.length ; i++) {
+
+                let brand=brands[i];
+
+                let tr=document.createElement("tr");
+                tr.setAttribute("align","center");
+                let td1=document.createElement("td");
+                td1.innerText=`${i+1}`;
+                tr.appendChild(td1);
+                let td2=document.createElement("td");
+                td2.innerText=`${brand.brandName}`;
+                tr.appendChild(td2);
+                let td3=document.createElement("td");
+                td3.innerText=`${brand.companyName}`;
+                tr.appendChild(td3);
+                let td4=document.createElement("td");
+                td4.innerText=`${brand.ordered}`;
+                tr.appendChild(td4);
+                let td5=document.createElement("td");
+                td5.innerText=`${brand.description}`;
+                tr.appendChild(td5);
+                let td6=document.createElement("td");
+                td6.innerText=`${brand.status}`;
+                tr.appendChild(td6);
+                let td7=document.createElement("td");
+                let a1=document.createElement("a");
+                a1.innerText="修改";
+                let a2=document.createElement("a");
+                a2.innerText="删除";
+                td7.appendChild(a1);
+                td7.appendChild(a2);
+                tr.appendChild(td7);
+                brandTable.appendChild(tr);
+            }
+        })
+    }
+
+
+</script>
+
+
+</body>
+</html>
